@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio LKPD PAI SD - Kepka BKPDM No. 020/2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-dark: #065f46;
+      --surface: #ffffff;
+      --bg-app: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Panel Pengaturan Guru (Kiri) */
+    .app-sidebar {
+      width: 440px;
+      min-width: 440px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.03);
+      z-index: 10;
+    }
+
+    .sidebar-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--primary), #10b981);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; color: #fff;
+    }
+    .brand-title h2 { font-family: 'Fredoka', cursive; font-size: 1.2rem; color: var(--primary-dark); }
+    .brand-title p { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
+
+    .sidebar-body { flex: 1; padding: 18px 22px; overflow-y: auto; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block; font-size: 0.75rem; font-weight: 700;
+      color: #334155; margin-bottom: 5px; text-transform: uppercase;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .select-box, .input-box {
+      width: 100%; padding: 8px 12px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 0.85rem; font-family: inherit; outline: none; background: #fff;
+    }
+    .select-box:focus, .input-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+    }
+
+    .info-badge {
+      background: #ecfdf5; border: 1px solid #a7f3d0;
+      border-radius: 8px; padding: 10px 12px;
+      font-size: 0.74rem; color: #065f46; line-height: 1.4;
+    }
+
+    .sidebar-footer {
+      padding: 14px 22px; border-top: 1px solid var(--border);
+      background: #fff;
+    }
+    .btn-print {
+      width: 100%; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff; border: none; padding: 12px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-print:hover { opacity: 0.95; }
+
+    /* Workspace Dokumen */
+    .app-workspace {
+      flex: 1; padding: 24px; overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .workspace-banner {
+      width: 210mm; background: #fef3c7; border: 1px solid #fde68a;
+      border-radius: 8px; padding: 8px 14px; font-size: 0.76rem;
+      color: #92400e; margin-bottom: 16px;
+    }
+
+    .document-paper {
+      width: 210mm; background: #ffffff;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      padding: 14mm 16mm; box-sizing: border-box; color: #0f172a;
+    }
+
+    /* Lembar Kerja Siswa */
+    .sheet-header {
+      border: 2px solid #0f172a; border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 12px;
+    }
+    .header-top {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 6px;
+    }
+    .header-title h1 { font-family: 'Fredoka', cursive; font-size: 1.15rem; }
+    .header-title p { font-size: 0.75rem; font-weight: 600; color: #475569; }
+    .score-box {
+      width: 60px; height: 50px; border: 2px solid #0f172a;
+      border-radius: 6px; text-align: center; display: flex; flex-direction: column;
+    }
+    .score-label { font-size: 0.62rem; font-weight: 800; background: #0f172a; color: #fff; padding: 2px 0; }
+
+    .student-meta {
+      display: grid; grid-template-columns: 2fr 1.2fr 1fr;
+      font-size: 0.78rem; gap: 12px;
+    }
+    .meta-line { display: flex; align-items: center; gap: 4px; }
+    .dotted-fill { flex: 1; border-bottom: 1px dotted #94a3b8; height: 12px; }
+
+    .ice-break-box {
+      background: #f0fdf4; border: 2px dashed #10b981;
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+      text-align: center; page-break-inside: avoid;
+    }
+    .ice-break-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #047857; color: #fff; font-size: 0.72rem;
+      font-weight: 700; padding: 2px 10px; border-radius: 16px; margin-bottom: 4px;
+    }
+    .ice-break-lyrics {
+      font-size: 0.82rem; line-height: 1.4; font-style: italic;
+      color: #064e3b; white-space: pre-line;
+    }
+
+    .section-banner {
+      background: #0f172a; color: #fff; font-size: 0.76rem;
+      font-weight: 800; padding: 4px 10px; border-radius: 6px;
+      margin: 14px 0 8px; display: flex; justify-content: space-between;
+      page-break-after: avoid;
+    }
+
+    .pg-grid-container {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
+    }
+    .pg-item {
+      border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 7px 9px; font-size: 0.76rem; page-break-inside: avoid; background: #fafafa;
+    }
+    .pg-header-row { display: flex; gap: 6px; font-weight: 600; margin-bottom: 3px; }
+    .pg-options { margin-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+
+    .isian-container { display: flex; flex-direction: column; gap: 5px; }
+    .isian-item {
+      border: 1px solid #e2e8f0; border-radius: 6px;
+      padding: 5px 8px; font-size: 0.76rem; page-break-inside: avoid;
+      display: flex; align-items: center; gap: 6px; background: #fafafa;
+    }
+    .isian-dot { flex: 1; border-bottom: 1px dotted #94a3b8; height: 10px; }
+
+    .hots-container { display: flex; flex-direction: column; gap: 10px; }
+    .hots-item {
+      border: 1.5px solid #cbd5e1; border-radius: 8px;
+      padding: 8px 10px; font-size: 0.78rem; page-break-inside: avoid; background: #fff;
+    }
+    .hots-scenario {
+      background: #f8fafc; border-left: 3px solid #047857;
+      padding: 5px 8px; font-size: 0.75rem; color: #334155; font-style: italic; margin: 4px 0;
+    }
+    .hots-answer-box {
+      border: 1px dashed #cbd5e1; border-radius: 6px; height: 46px;
+      background: #fafafa; margin-top: 5px; padding: 4px; font-size: 0.7rem; color: #94a3b8;
+    }
+
+    .deep-learning-box {
+      border: 1.5px solid #fed7aa; background: #fffbeb;
+      border-radius: 8px; padding: 8px 12px; margin: 12px 0 8px;
+      font-size: 0.76rem; page-break-inside: avoid;
+    }
+
+    .sheet-signatures {
+      display: flex; justify-content: space-between; font-size: 0.74rem;
+      text-align: center; margin-top: 10px; padding-top: 8px;
+      border-top: 1px solid #f1f5f9; page-break-inside: avoid;
+    }
+    .sig-col { width: 140px; }
+    .sig-space { height: 35px; }
+
+    [contenteditable="true"]:hover { background: #fefce8; cursor: text; }
+
+    @media print {
+      body { background: #fff; }
+      .app-sidebar, .workspace-banner { display: none !important; }
+      .app-workspace { padding: 0; margin: 0; }
+      .document-paper { box-shadow: none; border: none; width: 100%; padding: 0; }
+      @page { size: A4 portrait; margin: 12mm 14mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="app-sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">🕌</div>
+        <div class="brand-title">
+          <h2>Studio LKPD PAI SD</h2>
+          <p>Kepka BKPDM No. 020/2026 (Deep Learning)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-body">
+      <div class="grid-2 form-group">
+        <div>
+          <label>Tingkat Kelas</label>
+          <select class="select-box" id="selKelas" onchange="loadBabList()">
+            <option value="1">Kelas 1 SD (Fase A)</option>
+            <option value="2">Kelas 2 SD (Fase A)</option>
+            <option value="3">Kelas 3 SD (Fase B)</option>
+            <option value="4">Kelas 4 SD (Fase B)</option>
+            <option value="5">Kelas 5 SD (Fase C)</option>
+            <option value="6">Kelas 6 SD (Fase C)</option>
+          </select>
+        </div>
+        <div>
+          <label>Semester</label>
+          <select class="select-box" id="selSemester" onchange="loadBabList()">
+            <option value="1">Semester 1 (Ganjil)</option>
+            <option value="2">Semester 2 (Genap)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Bab Materi (Sesuai Regulasi 2026)</label>
+        <select class="select-box" id="selBab" onchange="renderDocument()">
+          <!-- Terisi Otomatis -->
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Nama Sekolah</label>
+        <input type="text" class="input-box" id="inSekolah" value="SD NEGERI CERIA NUSANTARA" oninput="syncLiveText()" />
+      </div>
+
+      <div class="info-badge">
+        🌿 <b>Standar CP Resmi BKPDM 2026:</b><br/>
+        • Ice Breaking (Lagu/Tepuk Ritmik Anak)<br/>
+        • 20 Soal PG Bergambar (Format Hemat Kertas)<br/>
+        • 10 Soal Isian Singkat Analitis<br/>
+        • 5 Soal Uraian Kasus Nyata HOTS<br/>
+        • Refleksi Mindful Learning & Tanda Tangan
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="btn-print" onclick="window.print()">
+        <span>🖨️</span> Cetak / Simpan PDF (A4)
+      </button>
+    </div>
+  </aside>
+
+  <main class="app-workspace">
+    <div class="workspace-banner">
+      💡 <b>Tips Guru:</b> Klik teks mana saja pada lembar kertas putih untuk mengedit redaksi soal secara mandiri sebelum dicetak.
+    </div>
+
+    <div class="document-paper">
+      
+      <!-- Header LKPD -->
+      <div class="sheet-header">
+        <div class="header-top">
+          <div class="header-title">
+            <h1 id="outSekolah" contenteditable="true">SD NEGERI CERIA NUSANTARA</h1>
+            <p>LEMBAR KERJA PESERTA DIDIK (LKPD) PENDIDIKAN AGAMA ISLAM & BUDI PEKERTI</p>
+          </div>
+          <div class="score-box">
+            <div class="score-label">NILAI</div>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-weight:bold;">-</div>
+          </div>
+        </div>
+
+        <div class="student-meta">
+          <div class="meta-line">Nama Siswa : <div class="dotted-fill"></div></div>
+          <div class="meta-line">Kelas / Sem : <b id="outMetaKelas">Kelas 1 / Semester 1</b></div>
+          <div class="meta-line">Perasaan : 😄 🙂 🤔</div>
+        </div>
+      </div>
+
+      <!-- Ice Breaking Lagu/Tepuk -->
+      <div class="ice-break-box">
+        <div class="ice-break-tag">
+          <span>🎵</span> <span id="outSongTag" contenteditable="true">Ayo Bernyanyi</span>
+        </div>
+        <div class="ice-break-lyrics" id="outSongLyrics" contenteditable="true"></div>
+      </div>
+
+      <!-- Bagian A: 20 PG (Grid 2 Kolom) -->
+      <div class="section-banner">
+        <span>BAGIAN A: PILIHAN GANDA (20 BUTIR)</span>
+        <span>Pilihlah salah satu jawaban yang tepat!</span>
+      </div>
+      <div class="pg-grid-container" id="pgGridContainer"></div>
+
+      <!-- Bagian B: 10 Isian Singkat -->
+      <div class="section-banner">
+        <span>BAGIAN B: ISIAN SINGKAT ANALITIS (10 BUTIR)</span>
+        <span>Isilah titik-titik di bawah ini dengan benar!</span>
+      </div>
+      <div class="isian-container" id="isianContainer"></div>
+
+      <!-- Bagian C: 5 Uraian HOTS -->
+      <div class="section-banner">
+        <span>BAGIAN C: URAIAN STUDI KASUS HOTS (5 BUTIR)</span>
+        <span>Selesaikan studi kasus di bawah ini secara nalar dan santun!</span>
+      </div>
+      <div class="hots-container" id="hotsContainer"></div>
+
+      <!-- Refleksi Mindful Learning -->
+      <div class="deep-learning-box">
+        <b>🌱 Refleksi Belajar Bermakna (Mindful Learning):</b>
+        <div style="margin-top: 3px; color:#475569; font-size: 0.74rem;">
+          Tuliskan 1 hal paling berharga yang kamu pahami hari ini dan bagaimana kamu akan menerapkannya di rumah:
+        </div>
+        <div style="border-bottom: 1px dotted #cbd5e1; height: 16px; margin-top: 4px;"></div>
+      </div>
+
+      <!-- Pengesahan -->
+      <div class="sheet-signatures">
+        <div class="sig-col">
+          Orang Tua / Wali
+          <div class="sig-space"></div>
+          ( ..................................... )
+        </div>
+        <div class="sig-col">
+          Guru Pendidikan Agama Islam
+          <div class="sig-space"></div>
+          ( ..................................... )
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Database Materi Sesuai CP Kepka BKPDM No. 020/2026
+    const databaseKurikulum2026 = {
+      1: {
+        1: [
+          { bab: "Bab 1: Huruf Hijaiah Berharakat & Surah Al-Fatihah", lagu: "Lagu Ceria: Harakat Hijaiyah (Nada: Bintang Kecil)", lirik: "Fathah di atas berbunyi a a a\nKasrah di bawah berbunyi i i i\nDhommah di depan berbunyi u u u\nSurah Al-Fatihah pembuka Al-Qur'an!", topik: "Membaca Huruf Hijaiah Berharakat dan Surah Al-Fatihah" },
+          { bab: "Bab 2: Rukun Iman & Mengenal Kasih Sayang Allah", lagu: "Lagu Ceria: Rukun Iman (Nada: Pelangi-Pelangi)", lirik: "Rukun Iman enam wajib kita percaya\nIman pada Allah pencipta semesta\nAr-Rahman Ar-Rahim penuh kasih sayang\nSayangi sesama dicintai Tuhan!", topik: "Rukun Iman dan Asmaulhusna Ar-Rahman Ar-Rahim" },
+          { bab: "Bab 3: Akhlak Menyucikan & Memuji Allah (Basmalah-Hamdalah)", lagu: "Lagu Ceria: Adab Memulai Kebaikan (Nada: Satu-Satu)", lirik: "Satu-satu ucapkan bismillah\nDua-dua puji alhamdulillah\nTiga-tiga anak yang bersyukur\nSatu dua tiga disayang Allah Ta'ala!", topik: "Menyucikan dan Memuji Allah melalui Kalimat Thayyibah" },
+          { bab: "Bab 4: Rukun Islam & Dua Kalimat Syahadat", lagu: "Lagu Ceria: Rukun Islam (Nada: Balonku)", lirik: "Rukun Islam berlima wajib kita amalkan\nSyahadat yang pertama, salat lima waktu\nPuasa di Ramadan, zakat untuk sesama\nHaji bila ku mampu, pergi ke Baitullah!", topik: "Rukun Islam dan Pelafalan Dua Kalimat Syahadat" },
+          { bab: "Bab 5: Kisah Keteladanan Nabi Adam a.s.", lagu: "Lagu Ceria: Teladan Nabi Adam (Nada: Lihat Kebunku)", lirik: "Nabi Adam manusia yang pertama\nBila berbuat khilaf segera bertaubat\nMemohon ampunan pada Allah Ta'ala\nHati jadi damai tentram sentosa!", topik: "Kisah Nabi Adam a.s. dan Sikap Mengakui Kesalahan" }
+        ],
+        2: [
+          { bab: "Bab 6: Menghafal Surah Pendek (Al-Ikhlas) & Keesaan Allah", lagu: "Lagu Ceria: Allah Maha Esa (Nada: Balonku)", lirik: "Allah itu Maha Esa tidak beranak pinak\nTempat kita memohon segala perlindungan\nTiada tandingan bagi keagungan-Nya!", topik: "Surah Al-Ikhlas dan Makna Keesaan Allah" },
+          { bab: "Bab 7: Hadis tentang Kebersihan Sebagian dari Iman", lagu: "Lagu Ceria: Bersih Itu Sehat (Nada: Menanam Jagung)", lirik: "Ayo kawan bersihkan badan, buang sampah pada tempatnya\nKebersihan itu sebagian iman, disayang Allah disenangi teman!", topik: "Penerapan Hadis Kebersihan dalam Kehidupan Sehari-hari" },
+          { bab: "Bab 8: Mengenal dan Beriman kepada Malaikat Allah", lagu: "Lagu Ceria: 10 Malaikat (Nada: Balonku)", lirik: "Jibril bawa wahyu, Mikail bagi rezeki\nIsrafil tiup sangkakala, Izrail cabut nyawa\nRaqib Atid catat amal perbuatan kita!", topik: "Iman kepada Malaikat Allah dan Tugas-Tugasnya" },
+          { bab: "Bab 9: Tata Cara Bersuci (Thaharah) & Berwudu Tertib", lagu: "Tepuk Ceria: Tepuk Wudu Ritmik", lirik: "Prok 3x Bismillah lalu cuci tangan!\nProk 3x Kumur-kumur basuh hidung basuh muka!\nProk 3x Tangan ke siku, kepala dan telinga!\nProk 3x Terakhir basuh kaki lalu doa... YESS!", topik: "Thaharah dan Praktik Gerakan Wudu" },
+          { bab: "Bab 10: Kisah Keteladanan Nabi Nuh a.s.", lagu: "Lagu Ceria: Bahtera Nabi Nuh (Nada: Naik Kereta Api)", lirik: "Kapal Nabi Nuh berlayar di atas bukit\nOrang yang beriman selamat bersamanya\nSabar hadapi ujian taat pada Ilahi!", topik: "Keteguhan Iman dan Kesabaran Nabi Nuh a.s." }
+        ]
+      },
+      2: {
+        1: [
+          { bab: "Bab 1: Membaca Huruf Hijaiah Bersambung", lagu: "Lagu Ceria: Rangkai Hijaiyah (Nada: Balonku)", lirik: "Huruf hijaiah bila disambung\nBentuknya indah dibaca tartil\nPahala berlipat disayang Allah!", topik: "Membaca dan Membedakan Huruf Hijaiah Bersambung" },
+          { bab: "Bab 2: Asmaulhusna (Al-Hafizh, Al-Wali, Al-Alim)", lagu: "Lagu Ceria: Sifat Allah Maha Pelindung (Nada: Menanam Jagung)", lirik: "Al-Hafizh Allah Maha Memelihara\nAl-Wali Pelindung sejati kita\nAl-Alim Maha Tahu segala rahasia!", topik: "Meneladani Asmaulhusna Al-Hafizh, Al-Wali, Al-Alim" },
+          { bab: "Bab 3: Akhlak terhadap Diri Sendiri (Disiplin & Santun)", lagu: "Lagu Ceria: Mandiri dan Bersih (Nada: Bangun Tidur)", lirik: "Bangun pagi bersihkan tempat tidur\nGosok gigi berpakaian rapi\nBelajar mandiri akhlak terpuji!", topik: "Pembiasaan Akhlak Mulia terhadap Diri Sendiri" },
+          { bab: "Bab 4: Tata Cara Salat Fardu dan Tertib Rukunnya", lagu: "Lagu Ceria: Gerakan Salat (Nada: Naik ke Puncak Gunung)", lirik: "Takbiratul ihram ruku lalu sujud\nTuma'ninah tenang hati kita\nSalat fardu tiang agama!", topik: "Rukun dan Tata Cara Pelaksanaan Salat Fardu" },
+          { bab: "Bab 5: Kisah Keteladanan Nabi Ibrahim a.s.", lagu: "Lagu Ceria: Keteguhan Nabi Ibrahim (Nada: Pelangi)", lirik: "Mencari Tuhan pencipta alam raya\nBintang dan bulan bukanlah pencipta\nHanya Allah Yang Maha Kuasa!", topik: "Ketauhidan Nabi Ibrahim a.s. Mencari Kebenaran" }
+        ],
+        2: [
+          { bab: "Bab 6: Surah Al-Falaq dan An-Nas (Perlindungan Diri)", lagu: "Lagu Ceria: Berlindung pada Allah (Nada: Dua Mata Saya)", lirik: "Hanya kepada Allah kita berlindung\nDari godaan bisikan yang jahat\nHati tenang damai sepanjang hari!", topik: "Kandungan Surah Al-Falaq dan Surah An-Nas" },
+          { bab: "Bab 7: Zikir dan Doa Setelah Salat Fardu", lagu: "Lagu Ceria: Zikir Ceria (Nada: Satu-Satu)", lirik: "Subhanallah Maha Suci Allah\nAlhamdulillah puji bagi Allah\nAllahu Akbar Allah Maha Besar!", topik: "Praktik Bacaan Zikir dan Doa Setelah Salat" },
+          { bab: "Bab 8: Adab Berteman dan Sikap Menyayangi Sesama", lagu: "Lagu Ceria: Sayang Sahabat (Nada: Sayonara)", lirik: "Sayang teman jangan bertengkar, saling memaafkan\nHidup rukun damai sentosa, disayang Allah!", topik: "Adab Islami dalam Pergaulan dan Pertemanan" },
+          { bab: "Bab 9: Keteladanan Nabi Muhammad SAW Masa Kanak-Kanak", lagu: "Lagu Ceria: Anak Jujur Al-Amin (Nada: Kasih Ibu)", lirik: "Nabi Muhammad jujur pekertinya\nSejak kecil rajin menggembala domba\nAl-Amin gelarnya teladan kita!", topik: "Kejujuran dan Kemandirian Masa Kecil Nabi Muhammad SAW" },
+          { bab: "Bab 10: Kisah Keteladanan Nabi Hud a.s. dan Nabi Saleh a.s.", lagu: "Lagu Ceria: Syukur Nikmat (Nada: Bintang Kecil)", lirik: "Nabi Hud dan Saleh serukan kebenaran\nJangan ingkar syukuri nikmat Tuhan\nHidup selamat dunia akhirat!", topik: "Ketabahan Dakwah Nabi Hud a.s. dan Nabi Saleh a.s." }
+        ]
+      },
+      3: {
+        1: [
+          { bab: "Bab 1: Menulis Huruf Hijaiah Bersambung & Surah Pendek", lagu: "Lagu Ceria: Kaligrafi Cilik (Nada: Menanam Jagung)", lirik: "Ayo kawan menulis hijaiah, sambung huruf rapi dan indah\nBaca tartil surah pendekmu, raih pahala setiap waktu!", topik: "Keterampilan Menulis Huruf Hijaiah Bersambung" },
+          { bab: "Bab 2: Sifat-Sifat Allah Swt. (Wajib, Mustahil, Jaiz)", lagu: "Lagu Ceria: Sifat Wajib Allah (Nada: Balonku)", lirik: "Wujud Qidam Baqa Mukhalafatu lil hawaditsi\nQiyamuhu binafsihi Wahdaniyah Qudrat Iradat\nIlmun Hayat Sama' Bashar Kalam!", topik: "Mengenal dan Meyakini Sifat-Sifat Allah Swt." },
+          { bab: "Bab 3: Berbaik Sangka (Husnuzan) kepada Allah Swt.", lagu: "Lagu Ceria: Selalu Berprasangka Baik (Nada: Pelangi)", lirik: "Yakin takdir Allah pasti yang terbaik\nJangan putus asa teruslah berdoa\nHusnuzan pada Allah hati jadi tenang!", topik: "Akhlak Berbaik Sangka (Husnuzan) kepada Allah Swt." },
+          { bab: "Bab 4: Seruan Ibadah: Tata Cara Azan dan Ikamah", lagu: "Lagu Ceria: Panggilan Salat (Nada: Bangun Tidur)", lirik: "Suara azan berkumandang merdu\nAjak muslim tunaikan salat berjemaah\nRapatkan barisan gapai rida Ilahi!", topik: "Lafaz, Ketentuan, dan Menjawab Azan serta Ikamah" },
+          { bab: "Bab 5: Kisah Nabi Muhammad SAW Periode Makkah (Awal Dakwah)", lagu: "Lagu Ceria: Dakwah Penuh Ketabahan (Nada: Dari Sabang Sampai Merauke)", lirik: "Menerima wahyu di Gua Hira\nDakwah santun tegakkan tauhid\nTabah menghadapi rintangan kaum Quraisy!", topik: "Masa Awal Kerasulan Nabi Muhammad SAW di Makkah" }
+        ],
+        2: [
+          { bab: "Bab 6: Hadis tentang Kewajiban Salat Tepat Waktu", lagu: "Lagu Ceria: Salat Tiang Agama (Nada: Satu-Satu)", lirik: "Salat itu tiang agama kita\nTepat waktu tunaikan di masjid\nAmal pertama yang dihisab nanti!", topik: "Pemahaman Hadis Kewajiban Mendirikan Salat" },
+          { bab: "Bab 7: Beriman kepada Kitab-Kitab Allah Swt.", lagu: "Lagu Ceria: Empat Kitab Suci (Nada: Balonku)", lirik: "Taurat Musa Zabur Daud mulia\nInjil Isa Al-Qur'an Nabi Muhammad\nAl-Qur'an pedoman sepanjang zaman!", topik: "Mengenal 4 Kitab Suci dan Para Rasul Penerimanya" },
+          { bab: "Bab 8: Akhlak Mulia terhadap Orang Tua, Keluarga, dan Guru", lagu: "Lagu Ceria: Hormat dan Patuh (Nada: Kasih Ibu)", lirik: "Hormat ayah ibu patuh nasihat guru\nTutur kata santun rendahkan hatimu\nDoakan mereka selamat dunia akhirat!", topik: "Birrul Walidain dan Adab Menghormati Guru" },
+          { bab: "Bab 9: Mengenal Salat Sunah (Rawatib dan Duha)", lagu: "Lagu Ceria: Sunah Berkah (Nada: Lihat Kebunku)", lirik: "Rawatib teguhkan salat fardumu\nDuha di pagi hari mohon berkah\nPahala berlimpah rezeki halal!", topik: "Tata Cara dan Keutamaan Salat Sunah" },
+          { bab: "Bab 10: Kisah Perjuangan Sahabat Periode Makkah", lagu: "Lagu Ceria: Sahabat Setia (Nada: Maju Tak Gentar)", lirik: "Bilal bin Rabah teguh imannya\nAbu Bakar dermawan membebaskan hamba\nTeladan pejuang Islam sejati!", topik: "Ketabahan dan Pengorbanan Sahabat di Makkah" }
+        ]
+      },
+      4: {
+        1: [
+          { bab: "Bab 1: Hadis Menjaga Hubungan Baik dengan Sesama", lagu: "Lagu Ceria: Jaga Silaturahmi (Nada: Dua Mata Saya)", lirik: "Tebarkan senyum jabatlah tangan\nJangan menyakiti hati kawanmu\nMenjaga silaturahmi berkah umur kita!", topik: "Pengamalan Hadis Menjaga Kerukunan dan Silaturahmi" },
+          { bab: "Bab 2: Teladan 5 Asmaulhusna (Al-Malik s.d. Al-Aziz)", lagu: "Lagu Ceria: Asmaulhusna Mulia (Nada: Menanam Jagung)", lirik: "Al-Malik Raja Al-Quddus Maha Suci\nAs-Salam Sejahtera Al-Mu'min Terpercaya\nAl-Aziz Perkasa mari teladani!", topik: "Al-Malik, Al-Quddus, As-Salam, Al-Mu'min, Al-Aziz" },
+          { bab: "Bab 3: Akhlak terhadap Kerabat dan Menghindari Gibah", lagu: "Lagu Ceria: Jaga Lisan (Nada: Satu-Satu)", lirik: "Gunakan lisan untuk kata yang baik\nJangan mencela jangan bicarakan aib\nPersaudaraan utuh hati jadi bersih!", topik: "Adab Berbicara Santun dan Menjauhi Perilaku Gibah" },
+          { bab: "Bab 4: Ibadah Salat Jumat dan Keutamaannya", lagu: "Lagu Ceria: Berkah Hari Jumat (Nada: Menanam Jagung)", lirik: "Mandi bersih kenakan pakaian rapi\nSimak khutbah dengan tertib tenang\nSalat Jumat kewajiban muslim sejati!", topik: "Ketentuan, Rukun Khutbah, dan Adab Salat Jumat" },
+          { bab: "Bab 5: Kisah Dakwah Terbuka Nabi Muhammad SAW di Makkah", lagu: "Lagu Ceria: Keteguhan Dakwah (Nada: Dari Sabang Sampai Merauke)", lirik: "Serukan tauhid di bukit Shafa\nSabar menghadapi boikot kaum Quraisy\nDakwah santun teladan sepanjang masa!", topik: "Strategi Dakwah Terbuka dan Kesabaran Nabi di Makkah" }
+        ],
+        2: [
+          { bab: "Bab 6: Menghafal & Menjelaskan Surah Pendek (At-Tin)", lagu: "Lagu Ceria: Manusia Ciptaan Terbaik (Nada: Balonku)", lirik: "Demi buah tin dan buah zaitun\nManusia diciptakan sebaik rupa\nBeriman dan beramal salih agar mulia!", topik: "Pesan Pokok dan Kandungan Surah At-Tin" },
+          { bab: "Bab 7: Beriman kepada Rasul-Rasul Allah dan Ulul Azmi", lagu: "Lagu Ceria: 5 Rasul Ulul Azmi (Nada: Bintang Kecil)", lirik: "Nuh Ibrahim Musa Isa Muhammad\nSabar luar biasa hadapi ujian berat\nUlul Azmi teladan iman teguh!", topik: "Sifat Wajib Rasul dan Kisah 5 Rasul Ulul Azmi" },
+          { bab: "Bab 8: Membiasakan Salam dan Menghormati Guru", lagu: "Lagu Ceria: Indahnya Salam (Nada: Pelangi)", lirik: "Ucapkan salam saat bertemu guru\nCium tangannya dengar nasihatnya\nIlmu berkah hidup pun mulia!", topik: "Adab Mengucap Salam dan Takzim kepada Pendidik" },
+          { bab: "Bab 9: Menyambut Usia Balig dan Tanggung Jawab Taklif", lagu: "Lagu Ceria: Usia Balig (Nada: Bangun Tidur)", lirik: "Tanda balig tiba saatnya mandiri\nIbadah fardu wajib dikerjakan\nMandi wajib bersihkan hadas besar!", topik: "Tanda Balig Menurut Fikih dan Konsekuensi Taklif" },
+          { bab: "Bab 10: Peristiwa Isra Mikraj Nabi Muhammad SAW", lagu: "Lagu Ceria: Perjalanan Isra Mikraj (Nada: Menanam Jagung)", lirik: "Dari Masjidil Haram ke Masjidil Aqsa\nNaik ke Sidratul Muntaha jemput salat\nPerintah lima waktu hadiah agung Ilahi!", topik: "Kisah Perjalanan Isra Mikraj dan Perintah Salat" }
+        ]
+      },
+      5: {
+        1: [
+          { bab: "Bab 1: Menjelaskan Surah Al-Ma'un & Peduli Dhuafa", lagu: "Lagu Ceria: Sayang Yatim (Nada: Kasih Ibu)", lirik: "Jangan menghardik anak yatim piatu\nBeri makan fakir miskin yang lapar\nSalat ikhlas jangan riya pamer!", topik: "Kandungan Surah Al-Ma'un tentang Karakter Peduli" },
+          { bab: "Bab 2: Asmaulhusna (Al-Qawiyyu, Al-Qayyum, Al-Muhyi)", lagu: "Lagu Ceria: Kebesaran Allah (Nada: Pelangi)", lirik: "Al-Qawiyyu Maha Kuat tiada lemah\nAl-Qayyum Mandiri tegakkan semesta\nAl-Muhyi Menghidupkan segala makhluk!", topik: "Makna Asmaulhusna Al-Qawiyyu, Al-Qayyum, Al-Muhyi" },
+          { bab: "Bab 3: Akhlak kepada Teman & Menghormati Tetangga", lagu: "Lagu Ceria: Tetangga Rukun (Nada: Satu-Satu)", lirik: "Hormati tetangga dekat dan jauh\nBila ada kelebihan bagilah makanan\nHidup rukun damai tentram bersama!", topik: "Adab Islami terhadap Tetangga dan Sahabat" },
+          { bab: "Bab 4: Ibadah Puasa Wajib (Ramadan) dan Puasa Sunah", lagu: "Lagu Ceria: Ramadan Ceria (Nada: Menanam Jagung)", lirik: "Tahan lapar dahaga dan nafsu amarah\nPuasa Ramadan wajib kita tunaikan\nLatih kesabaran gapai predikat takwa!", topik: "Ketentuan, Rukun, dan Macam-Macam Puasa" },
+          { bab: "Bab 5: Kisah Hijrah Nabi Muhammad SAW Periode Madinah", lagu: "Lagu Ceria: Thola'al Badru Madinah", lirik: "Thola'al badru 'alaina min tsaniyyatil wada'\nNabi hijrah disambut sukacita\nKaum Anshar dan Muhajirin bersaudara!", topik: "Peristiwa Hijrah dan Membangun Kota Madinah" }
+        ],
+        2: [
+          { bab: "Bab 6: Hadis Berbuat Baik kepada Orang Tua, Guru, dan Teman", lagu: "Lagu Ceria: Berbuat Baik Mulia (Nada: Dua Mata Saya)", lirik: "Bicara santun pada ayah bunda\nPatuh guru sayangi kawanmu\nPintu surga terbuka untuk anak berbakti!", topik: "Pemahaman Hadis Berbakti dan Memuliakan Sesama" },
+          { bab: "Bab 7: Beriman kepada Hari Akhir (Kiamat Sugra & Kubra)", lagu: "Lagu Ceria: Bekal Akhirat (Nada: Balonku)", lirik: "Hari akhir pasti akan tiba\nTimbangan amal mizan tegak adil\nPerbanyak kebajikan demi rida Allah!", topik: "Tanda-Tanda Hari Kiamat dan Pertanggungjawaban Amal" },
+          { bab: "Bab 8: Akhlak terhadap Non-Muslim (Toleransi Wasathiyyah)", lagu: "Lagu Ceria: Indahnya Toleransi (Nada: Dari Sabang Sampai Merauke)", lirik: "Saling hormat saling menjaga hak bersama\nIslam ajarkan damai tanpa paksaan\nPiagam Madinah lambang persatuan!", topik: "Prinsip Toleransi dan Kerukunan terhadap Non-Muslim" },
+          { bab: "Bab 9: Makanan dan Minuman Halal Lagi Baik (Halalan Thayyiban)", lagu: "Lagu Ceria: Konsumsi Halal (Nada: Menanam Jagung)", lirik: "Pilih makanan yang halal dan bergizi\nJauhi yang haram perusak raga\nDoa mustajab hidup penuh berkah!", topik: "Ketentuan Makanan Halal, Thayyib, dan Menjauhi yang Haram" },
+          { bab: "Bab 10: Peristiwa Fathu Makkah (Kemenangan Damai)", lagu: "Lagu Ceria: Fathu Makkah Penuh Maaf (Nada: Maju Tak Gentar)", lirik: "Kembali ke Makkah tanpa tetes darah\nRasulullah maafkan penduduk kota\nIslam berjaya penuh rahmat dan damai!", topik: "Fathu Makkah dan Keteladanan Pemaaf Rasulullah SAW" }
+        ]
+      },
+      6: {
+        1: [
+          { bab: "Bab 1: Menjelaskan Surah Pendek (Al-A'la) & Hukum Mim Sukun", lagu: "Lagu Ceria: Tartil Mim Sukun (Nada: Balonku)", lirik: "Hukum mim sukun tiga macamnya\nIkhfa syafawi samar mendengung\nIdgham mimi lebur izhar syafawi jelas!", topik: "Surah Al-A'la dan Kaidah Tajwid Hukum Mim Sukun" },
+          { bab: "Bab 2: Beriman kepada Qada' dan Qadar (Ikhtiar & Tawakal)", lagu: "Lagu Ceria: Ikhtiar dan Doa (Nada: Bangun Tidur)", lirik: "Berusaha sungguh-sungguh dengan ikhtiar\nBerdoa tulus lalu bertawakal\nTakdir Allah pasti yang terbaik!", topik: "Konsep Takdir Muallaq, Mubram, Ikhtiar, dan Tawakal" },
+          { bab: "Bab 3: Akhlak Melindungi Hewan dan Tumbuhan (Peduli Lingkungan)", lagu: "Lagu Ceria: Sayangi Makhluk Allah (Nada: Lihat Kebunku)", lirik: "Beri makan hewan jangan disiksa\nSiramlah tanaman rawatlah pohonmu\nIslam ajarkan rahmatan lil 'alamin!", topik: "Kewajiban Menjaga Kelestarian Fauna dan Flora" },
+          { bab: "Bab 4: Ibadah Zakat, Infak, dan Sedekah", lagu: "Lagu Ceria: Sucikan Harta (Nada: Menanam Jagung)", lirik: "Tunaikan zakat bersihkan harta jiwa\nInfak sedekah menolong dhuafa\nTangan di atas lebih mulia!", topik: "Syarat, Rukun, Mustahik, dan Hikmah Zakat serta Infak" },
+          { bab: "Bab 5: Keteladanan Sahabat Abu Bakar & Umar bin Khattab r.a.", lagu: "Lagu Ceria: Dua Khalifah Agung (Nada: Satu-Satu)", lirik: "Abu Bakar ash-shiddiq jujur dan setia\nUmar bin Khattab adil membela hak\nPemimpin teladan dicintai umat!", topik: "Kepemimpinan Khulafaurasyidin: Abu Bakar dan Umar r.a." }
+        ],
+        2: [
+          { bab: "Bab 6: Hadis tentang Adab Bergaul dan Menjaga Persaudaraan", lagu: "Lagu Ceria: Ukhuwah Islamiyah (Nada: Sayonara)", lirik: "Sesama muslim bagai satu bangunan\nSaling menguatkan saling menyayangi\nDamai hidup kita rukun selamanya!", topik: "Pengamalan Hadis Adab Bergaul dan Persaudaraan" },
+          { bab: "Bab 7: Asmaulhusna (Al-Afuw, Al-Ghaffar, Ash-Shamad)", lagu: "Lagu Ceria: Bersandar pada Allah (Nada: Pelangi)", lirik: "Al-Afuw Maha Pemaaf kesalahan kita\nAsh-Shamad tempat bergantung segala urusan\nHanya kepada Allah kita memohon!", topik: "Makna dan Meneladani Al-Afuw, Al-Ghaffar, Ash-Shamad" },
+          { bab: "Bab 8: Akhlak kepada Allah: Berdoa dan Bertawakal", lagu: "Lagu Ceria: Doa dan Berserah Diri (Nada: Bintang Kecil)", lirik: "Panjatkan doa di sepertiga malam\nPasrahkan diri pada takdir Ilahi\nHati jadi damai iman semakin teguh!", topik: "Adab Berdoa dan Hakikat Tawakal kepada Allah Swt." },
+          { bab: "Bab 9: Pengelolaan Wakaf untuk Kesejahteraan Umat", lagu: "Lagu Ceria: Pahala Jariyah Wakaf (Nada: Menanam Jagung)", lirik: "Wakafkan tanah bangun sarana ilmu\nPahala mengalir tiada terputus\nSejahterakan umat makmurkan masyarakat!", topik: "Ketentuan, Rukun, dan Manfaat Sosial Ibadah Wakaf" },
+          { bab: "Bab 10: Keteladanan Sahabat Utsman & Ali bin Abi Thalib r.a.", lagu: "Lagu Ceria: Dermawan dan Pintu Ilmu (Nada: Menanam Jagung)", lirik: "Utsman bin Affan dermawan beli sumur\nAli bin Abi Thalib gerbangnya ilmu\nPemimpin adil pejuang sejati!", topik: "Kepemimpinan Khulafaurasyidin: Utsman dan Ali r.a." }
+        ]
+      }
+    };
+
+    function loadBabList() {
+      const kelas = document.getElementById('selKelas').value;
+      const sem = document.getElementById('selSemester').value;
+      const selBab = document.getElementById('selBab');
+      selBab.innerHTML = '';
+
+      const list = databaseKurikulum2026[kelas][sem] || [];
+      list.forEach((item, index) => {
+        const opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = item.bab;
+        selBab.appendChild(opt);
+      });
+
+      renderDocument();
+    }
+
+    function syncLiveText() {
+      document.getElementById('outSekolah').textContent = document.getElementById('inSekolah').value.toUpperCase();
+    }
+
+    function renderDocument() {
+      const kelas = document.getElementById('selKelas').value;
+      const sem = document.getElementById('selSemester').value;
+      const babIndex = document.getElementById('selBab').value || 0;
+      const dataBab = databaseKurikulum2026[kelas][sem][babIndex];
+
+      if (!dataBab) return;
+
+      document.getElementById('outMetaKelas').textContent = `Kelas ${kelas} / Semester ${sem}`;
+      document.getElementById('outSongTag').textContent = dataBab.lagu;
+      document.getElementById('outSongLyrics').textContent = dataBab.lirik;
+
+      renderPG(dataBab, kelas);
+      renderIsian(dataBab);
+      renderHOTS(dataBab);
+    }
+
+    function renderPG(dataBab, kelas) {
+      const container = document.getElementById('pgGridContainer');
+      container.innerHTML = '';
+
+      const bankPG = [
+        { icon: "📖", q: `Kajian dalam topik "${dataBab.topik}" membimbing kita agar senantiasa...`, opt: ["A. Menaati ajaran agama dan berakhlak mulia", "B. Mencari perhatian dan pujian teman", "C. Bermalas-malasan dalam belajar", "D. Mengabaikan nasihat guru"] },
+        { icon: "🤲", q: "Bukti rasa syukur seorang anak atas nikmat ilmu pengetahuan diwujudkan dengan...", opt: ["A. Membagikan ilmu dengan rendah hati", "B. Menyombongkan kepandaian", "C. Menolak belajar bersama kawan", "D. Meremehkan tugas yang diberikan"] },
+        { icon: "⚖️", q: "Ketika bermusyawarah di kelas dan terjadi perbedaan pendapat, adab islami yang benar adalah...", opt: ["A. Menghargai dan mencari titik temu bijak", "B. Memaksakan pendapat pribadi", "C. Meninggalkan musyawarah sambil marah", "D. Mengejek pemikiran teman"] },
+        { icon: "🌱", q: "Menjaga kebersihan ruang kelas dan merawat tanaman sekolah termasuk ibadah yang bernilai...", opt: ["A. Kepedulian lingkungan (rahmatan lil 'alamin)", "B. Beban yang memberatkan murid", "C. Pekerjaan yang sia-sia", "D. Perbuatan tanpa pahala"] },
+        { icon: "💧", q: "Dalam menjalankan perintah ibadah fardu, syarat utama agar ibadah diterima Allah adalah...", opt: ["A. Ikhlas semata-mata mengharap rida Allah", "B. Dikerjakan dengan tergesa-gesa", "C. Mengharap imbalan uang dari orang tua", "D. Pamer di media sosial"] },
+        { icon: "🤝", q: "Menebarkan senyum dan mengucap salam saat berpapasan dengan warga sekolah bertujuan untuk...", opt: ["A. Mempererat persaudaraan dan menciptakan damai", "B. Membuang waktu luang", "C. Menunjukkan rasa bangga diri", "D. Menghindari teguran"] },
+        { icon: "🛡️", q: "Sikap amanah dan jujur seorang murid dalam kegiatan evaluasi belajar ditunjukkan dengan...", opt: ["A. Mengerjakan ujian dengan mandiri dan jujur", "B. Mencontek catatan kawan", "C. Meminta bantuan orang lain", "D. Memberikan contekan kepada teman"] },
+        { icon: "🕌", q: "Kewajiban mendirikan salat tepat waktu melatih karakter muslim dalam hal...", opt: ["A. Kedisiplinan dan tanggung jawab moral", "B. Ketergesa-gesaan dalam bekerja", "C. Sikap takut yang berlebihan", "D. Menghindari pekerjaan rumah"] },
+        { icon: "🕊️", q: "Sikap memaafkan kawan yang tidak sengaja merusak pensil kita merupakan cerminan dari...", opt: ["A. Hati yang lapang dan budi pekerti luhur", "B. Kelemahan diri yang pasrah", "C. Rasa takut membalas", "D. Ketidakpedulian pada barang sendiri"] },
+        { icon: "📚", q: "Membaca ayat Al-Qur'an secara tartil dan memahami artinya membawa hikmah berupa...", opt: ["A. Ketenangan jiwa dan petunjuk kebaikan", "B. Kecepatan menyelesaikan bacaan saja", "C. Pujian sebagai qari terbaik", "D. Kebanggaan di depan banyak orang"] },
+        { icon: "👑", q: "Meneladani sifat-sifat mulia Allah (Asmaulhusna) dalam kehidupan sehari-hari dilakukan dengan...", opt: ["A. Mengamalkan maknanya dalam perbuatan nyata", "B. Cukup mencatatnya di buku tulis", "C. Menghafal tanpa memahami arti", "D. Membanggakan hafalan nama-nama-Nya"] },
+        { icon: "🌾", q: "Gemar menyisihkan uang jajan untuk kotak infak hari Jumat mencerminkan sifat...", opt: ["A. Dermawan dan memiliki empati sosial", "B. Boros membelanjakan uang", "C. Kurang perhitungan finansial", "D. Ingin disanjung teman sekelas"] },
+        { icon: "🌙", q: "Mampu menahan diri agar tidak membalas ejekan teman dengan kata kasar termasuk bentuk...", opt: ["A. Pengendalian diri (mujahadah)", "B. Sikap penakut tanpa alasan", "C. Kekalahan dalam berteman", "D. Rasa minder yang mendalam"] },
+        { icon: "☀️", q: "Manusia diciptakan sebagai khalifah di muka bumi, hal ini memiliki konsekuensi tugas untuk...", opt: ["A. Memakmurkan dan melestarikan alam", "B. Menguasai alam semaunya sendiri", "C. Mengeksploitasi sumber daya tanpa batas", "D. Menyerahkan lingkungan pada orang lain"] },
+        { icon: "👂", q: "Ketika bapak/ibu guru sedang memberikan penjelasan materi, adab murid yang baik adalah...", opt: ["A. Menyimak penjelasan secara tenang dan tertib", "B. Berbicara sendiri dengan teman sebangku", "C. Menggambar di meja belajar", "D. Mengerjakan tugas mata pelajaran lain"] },
+        { icon: "✨", q: "Meyakini bahwa setiap amal baik dan buruk dicatat malaikat Allah menumbuhkan rasa...", opt: ["A. Mawas diri dalam berucap dan bertindak", "B. Cemas yang membuat tidak berani bermain", "C. Curiga kepada orang-orang di sekitar", "D. Keinginan berbuat sembunyi-sembunyi"] },
+        { icon: "🚪", q: "Adab bertamu ke rumah tetangga atau guru yang diajarkan dalam Islam diawali dengan...", opt: ["A. Mengetuk santun dan mengucap salam", "B. Membuka pintu langsung tanpa izin", "C. Berteriak dari luar pagar", "D. Mengintip jendela ruang tamu"] },
+        { icon: "🍽️", q: "Sebelum menikmati santapan makanan sehat, adab yang dicontohkan Rasulullah SAW adalah...", opt: ["A. Membaca basmalah dan menggunakan tangan kanan", "B. Langsung memakannya selagi sangat panas", "C. Mengeluhkan menu yang dihidangkan", "D. Makan sambil berdiri dan tergesa-gesa"] },
+        { icon: "🌟", q: "Sikap pantang menyerah saat menghadapi materi belajar yang sulit merupakan cerminan...", opt: ["A. Semangat thalabul 'ilmi (menuntut ilmu)", "B. Keterpaksaan karena takut nilai jelek", "C. Tindakan membela gengsi", "D. Keinginan mengalahkan peringkat teman"] },
+        { icon: "🕋", q: "Tujuan akhir dari mempelajari seluruh materi syariat dan akidah Islam adalah membentuk insan yang...", opt: ["A. Beriman, bertakwa, dan berakhlak mulia", "B. Terkenal di kalangan sekolah", "C. Unggul pengetahuan tanpa etika sopan", "D. Ditakuti oleh orang-orang di sekitarnya"] }
+      ];
+
+      bankPG.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'pg-item';
+        div.innerHTML = `
+          <div class="pg-header-row">
+            <span>${item.icon}</span>
+            <span>${i + 1}. ${item.q}</span>
+          </div>
+          <div class="pg-options">
+            <div>${item.opt[0]}</div>
+            <div>${item.opt[1]}</div>
+            <div>${item.opt[2]}</div>
+            ${parseInt(kelas) >= 4 ? `<div>${item.opt[3]}</div>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderIsian(dataBab) {
+      const container = document.getElementById('isianContainer');
+      container.innerHTML = '';
+
+      const bankIsian = [
+        `Inti ajaran yang dapat kita teladani dari topik "${dataBab.topik}" adalah...`,
+        "Sifat kesesuaian antara ucapan dan perbuatan dalam istilah akhlak mulia disebut...",
+        "Sebelum mendirikan salat fardu, kita diwajibkan menyucikan diri dari hadas kecil dengan...",
+        "Sikap menghormati teman yang berbeda pendapat dan latar belakang suku bangsa mencerminkan sifat...",
+        "Sebagai wujud rasa syukur atas nikmat yang telah dianugerahkan Allah, kita mengucap lafaz...",
+        "Menjaga titipan barang kawan dan mengembalikannya tepat waktu merupakan wujud perilaku...",
+        "Tangan di atas dalam ajaran Islam memiliki kemuliaan lebih tinggi daripada tangan di bawah, maksudnya adalah orang yang suka...",
+        "Ketika kita mendengar kumandang azan, sikap terbaik yang kita lakukan adalah menjawab azan dan bersiap...",
+        "Nabi Muhammad SAW memberikan teladan akhlak mulia dengan membalas keburukan menggunakan...",
+        "Membaca Al-Qur'an secara tartil, perlahan, dan memahami artinya akan memberikan cahaya bagi..."
+      ];
+
+      bankIsian.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'isian-item';
+        div.innerHTML = `
+          <span style="font-weight:700;">${i + 1}.</span>
+          <span>${q}</span>
+          <div class="isian-dot"></div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderHOTS(dataBab) {
+      const container = document.getElementById('hotsContainer');
+      container.innerHTML = '';
+
+      const bankHOTS = [
+        {
+          no: 1,
+          kasus: "Studi Kasus 1 (Kejujuran di Kantin): Saat jam istirahat, kamu melihat seorang kawan menerima uang kembalian belanja yang berlebih dari penjual kantin sekolah, namun ia berniat menyimpannya untuk jajan lagi.",
+          tanya: "Berdasarkan materi yang dipelajari, langkah santun dan bijak apa yang akan kamu lakukan untuk mengingatkan kawanmu tersebut tanpa mempermalukannya di depan orang banyak?"
+        },
+        {
+          no: 2,
+          kasus: "Studi Kasus 2 (Empati & Kerukunan): Di kelasmu ada teman yang buku tugasnya basah terkena tumpahan air minum secara tidak sengaja oleh teman yang lain, sehingga ia menangis cemas.",
+          tanya: "Bagaimana caramu mengamalkan nilai kasih sayang dan persaudaraan sesama muslim untuk mendamaikan keduanya serta memberikan solusi nyata?"
+        },
+        {
+          no: 3,
+          kasus: "Studi Kasus 3 (Disiplin Waktu Ibadah): Kamu diajak teman-teman bermain sepak bola/game hingga mendekati waktu salat berakhir. Jika kamu pamit untuk salat, teman-temanmu mungkin merasa kecewa.",
+          tanya: "Bagaimana keputusan terbaik yang akan kamu ambil agar kewajiban ibadah fardu kepada Allah tetap tertib terlaksana sekaligus hubungan pertemananmu tetap terjalin baik?"
+        },
+        {
+          no: 4,
+          kasus: "Studi Kasus 4 (Menghargai Keberagaman): Saat kegiatan belajar kelompok, ada teman yang memiliki cara belajar dan daya tangkap hafalan lebih lambat daripada yang lain. Sebagian anggota kelompok mulai menunjukkan rasa tidak sabar.",
+          tanya: "Sikap keteladanan apa yang harus kamu hadirkan di dalam kelompok tersebut agar semua teman merasa dihargai dan tujuan belajar bersama tercapai?"
+        },
+        {
+          no: 5,
+          kasus: "Studi Kasus 5 (Kepedulian Lingkungan Hidup): Lingkungan halaman sekolah kotor berserakan oleh sampah plastik sisa makanan ringan setelah acara kegiatan sekolah selesai.",
+          tanya: "Rancanglah 2 ide aksi nyata yang dapat kamu gerakkan bersama teman-temanmu untuk membuktikan bahwa menjaga kebersihan lingkungan adalah bagian dari rasa cinta kita kepada Allah dan alam ciptaan-Nya!"
+        }
+      ];
+
+      bankHOTS.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'hots-item';
+        div.innerHTML = `
+          <div style="font-weight:700; color:#047857;">SOAL URAIAN KASUS HOTS #${item.no}</div>
+          <div class="hots-scenario">${item.kasus}</div>
+          <div style="font-weight:600; margin-top:4px;">${item.tanya}</div>
+          <div class="hots-answer-box" contenteditable="true">
+            Tuliskan analisis alasan dan langkah solusi terbaikmu di sini...
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Jalankan inisialisasi awal
+    loadBabList();
+  </script>
+</body>
+</html>
